@@ -47,10 +47,7 @@ int main(int argc, char* argv[]) {
 	Write_init(out);
 	Send_init(out, remote_ip, remote_port);
 
-	Receive_shutdown();
-	Read_shutdown();
-	Write_shutdown();
-	Send_shutdown();
+	Boss_exitSignal();
 
 	return 0;
 }

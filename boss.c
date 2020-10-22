@@ -17,6 +17,9 @@ int local_port;
 static pthread_mutex_t list_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t port_mutex = PTHREAD_MUTEX_INITIALIZER;
 
+static pthread_mutex_t main_mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_cond_t main_cond = PTHREAD_COND_INITIALIZER;
+
 struct sockaddr_in sinNew;
 
 
@@ -54,9 +57,11 @@ struct sockaddr_in Boss_getSocket() {
 int Boss_appendList(List* list, void* item) {
 	int return_value = 0;
 	pthread_mutex_lock(&list_mutex);
+	{
 		if (List_append(list, item) == -1) {
 			return_value = -1;
 		}
+	}
 	pthread_mutex_unlock(&list_mutex);
 
 	return return_value;
@@ -69,4 +74,13 @@ void Boss_shutdown(void) {
 	Send_shutdown();
 	Write_shutdown();
 	Read_shutdown();
+	pthread_cond_signal(&main_cond);
+}
+
+void Boss_exitSignal(void) {
+	pthread_mutex_lock(&main_mutex);
+	{
+		pthread_cond_wait(&main_cond, &main_mutex);
+	}
+	pthread_mutex_unlock(&main_mutex);
 }
