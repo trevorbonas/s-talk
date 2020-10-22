@@ -41,7 +41,10 @@ struct sockaddr_in Boss_getSocket() {
 			sinNew.sin_port = htons(local_port);
 
 			int socketDescriptor = socket(PF_INET, SOCK_DGRAM, 0);
-			bind(socketDescriptor, (struct sockaddr*) &sinNew, sizeof(sinNew));
+			if (bind(socketDescriptor, (struct sockaddr*) &sinNew, sizeof(sinNew)) == -1) {
+				printf("ERROR: Socket could not be bound\nExiting program\n");
+				Boss_shutdown();
+			}
 			sockInit = 1;
 		}
 	}
@@ -84,7 +87,7 @@ void Boss_exitSignal(void) {
 		pthread_cond_wait(&main_cond, &main_mutex);
 	}
 	pthread_mutex_unlock(&main_mutex);
-	
+
 	Receive_shutdown();
 	Send_shutdown();
 	Write_shutdown();

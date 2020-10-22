@@ -33,8 +33,9 @@ void* sendMessage(void* unused) {
 		char* message = List_first(out_list);
 		List_remove(out_list);
 		unsigned int sin_len = sizeof(sinRemote);
+
 		sendto(socketDescriptor, message,
-			strlen(message), 0, (struct sockaddr*) &sinRemote,
+			sizeof(message), 0, (struct sockaddr*) &sinRemote,
 			sin_len);
 		// Has to check message + 2 since ENTER included '\n' and fgets
 		// puts EOF after that
@@ -49,6 +50,9 @@ void Send_init(List* list, struct sockaddr_in remoteAddress, int remotePort) {
 	out_list = list;
 	sinRemote = remoteAddress;
 	remote_port = remotePort;
+
+	printf("Remote address according to main arguments: %d\n", ntohs(sinRemote.sin_addr.s_addr));
+
 	pthread_create(&sendThread, NULL, sendMessage, NULL);
 }
 

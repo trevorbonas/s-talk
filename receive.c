@@ -20,7 +20,10 @@ static List* in_list;
 void* receiveTransmission(void* unused) {
 	printf("Receive thread executing!\n");
 	// Address
-	Boss_getSocket();
+	struct sockaddr_in sin = Boss_getSocket();
+
+	printf("Local port according to Boss_getSocket: ");
+	printf("%d\n", ntohs(sin.sin_port));
 
 	int socketDescriptor = socket(PF_INET, SOCK_DGRAM, 0);
 
