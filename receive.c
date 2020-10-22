@@ -32,7 +32,7 @@ void* receiveTransmission(void* unused) {
 		unsigned int sin_len = sizeof(sinRemote);
 		char* messageRx = (char*)malloc(1024); // Max length is 1024, 1024 characters
 		int bytesRx = recvfrom(socketDescriptor,
-			messageRx, 1024, 0, (struct sockaddr*) &sinRemote,
+			messageRx, sizeof(messageRx), 0, (struct sockaddr*) &sinRemote,
 			&sin_len);
 
 		int terminateIdx = (bytesRx < 1024)?bytesRx:1024 - 1;
