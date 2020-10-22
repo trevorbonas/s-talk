@@ -17,8 +17,8 @@ int local_port;
 static pthread_mutex_t list_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t port_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-static pthread_mutex_t main_mutex = PTHREAD_MUTEX_INITIALIZER;
-static pthread_cond_t main_cond = PTHREAD_COND_INITIALIZER;
+pthread_mutex_t main_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t main_cond = PTHREAD_COND_INITIALIZER;
 
 struct sockaddr_in sinNew;
 
@@ -70,11 +70,12 @@ int Boss_appendList(List* list, void* item) {
 // Calls shutdown for every thread
 // Can be called from any thread
 void Boss_shutdown(void) {
-	Receive_shutdown();
-	Send_shutdown();
-	Write_shutdown();
-	Read_shutdown();
-	pthread_cond_signal(&main_cond);
+	//pthread_mutex_lock(&main_mutex);
+	{
+		pthread_cond_signal(&main_cond);
+		printf("Just signaled main cond\n");
+	}
+	//pthread_mutex_unlock(&main_mutex);
 }
 
 void Boss_exitSignal(void) {
@@ -83,4 +84,10 @@ void Boss_exitSignal(void) {
 		pthread_cond_wait(&main_cond, &main_mutex);
 	}
 	pthread_mutex_unlock(&main_mutex);
+	
+	Receive_shutdown();
+	Send_shutdown();
+	Write_shutdown();
+	Read_shutdown();
+	printf("Main thread now free to end!\n");
 }

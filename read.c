@@ -11,6 +11,7 @@ List* in_list;
 static pthread_t readThread;
 
 void* readToScreen(void* unused){
+	printf("Read thread executing!\n");
 	while(1){
 		Receive_signalNewMsg();
 		const char* intro = "friend: ";
@@ -20,7 +21,7 @@ void* readToScreen(void* unused){
 		fputs(intro, stdout);
 		fputs(message, stdout);
 		fputs(nl, stdout);
-		if (*(message) == '!' && *(message + 1) == EOF) {
+		if (*(message) == '!' && *(message + 2) == '\0') {
 			Boss_shutdown(); // receive.c will take care of freeing the message
 		}
 		free(message);
@@ -33,6 +34,7 @@ void Read_init(List* list){
 }
 
 void Read_shutdown(void) {
+	printf("In read shutdown\n");
 	pthread_cancel(readThread);
 	pthread_join(readThread, NULL);
 }

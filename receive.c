@@ -18,6 +18,7 @@ static pthread_cond_t in_cond = PTHREAD_COND_INITIALIZER;	// Conditional variabl
 static List* in_list;
 
 void* receiveTransmission(void* unused) {
+	printf("Receive thread executing!\n");
 	// Address
 	Boss_getSocket();
 
@@ -65,6 +66,7 @@ void Receive_init(List* list) {
 }
 
 void Receive_shutdown(void) {
+	printf("In receive shutdown\n");
 	pthread_cancel(receiveThread);
 	pthread_join(receiveThread, NULL);
 	List_free(in_list, Receive_freeMessages); // Just in case there's something in buffer or read didn't free

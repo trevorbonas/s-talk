@@ -22,6 +22,7 @@ int remote_port;
 
 
 void* sendMessage(void* unused) {
+	printf("Send thread executing!\n");
 	// Need to do a bunch of stuff here involving
 	// mutexes and condition variables with write.c
 	while(1) {
@@ -35,8 +36,9 @@ void* sendMessage(void* unused) {
 		sendto(socketDescriptor, message,
 			strlen(message), 0, (struct sockaddr*) &sinRemote,
 			sin_len);
-
-		if (*(message) == '!' && *(message + 1) == EOF) {
+		// Has to check message + 2 since ENTER included '\n' and fgets
+		// puts EOF after that
+		if (*(message) == '!' && *(message + 2) == '\0') {
 			Boss_shutdown();
 		}
 		free(message);
@@ -51,6 +53,9 @@ void Send_init(List* list, struct sockaddr_in remoteAddress, int remotePort) {
 }
 
 void Send_shutdown(void) {
+	printf("In send shutdown\n");
 	pthread_cancel(sendThread);
+	printf("Cancelled sendThread\n");
 	pthread_join(sendThread, NULL);
+	printf("Send shutdown finished\n");
 }
