@@ -28,6 +28,7 @@ void* receiveTransmission(void* unused) {
 	int socketDescriptor = socket(PF_INET, SOCK_DGRAM, 0);
 
 	while(1) {
+		printf("Waiting for message\n");
 		struct sockaddr_in sinRemote; // Address of sender
 		unsigned int sin_len = sizeof(sinRemote);
 		char* messageRx = (char*)malloc(1024); // Max length is 1024, 1024 characters

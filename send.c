@@ -34,9 +34,11 @@ void* sendMessage(void* unused) {
 		List_remove(out_list);
 		unsigned int sin_len = sizeof(sinRemote);
 
-		sendto(socketDescriptor, message,
+		if (sendto(socketDescriptor, message,
 			sizeof(message), 0, (struct sockaddr*) &sinRemote,
-			sin_len);
+			sin_len) == SO_ERROR) {
+			printf("Message not successfully sent!\n");
+		}
 		// Has to check message + 2 since ENTER included '\n' and fgets
 		// puts EOF after that
 		if (*(message) == '!' && *(message + 2) == '\0') {
