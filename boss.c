@@ -73,12 +73,11 @@ int Boss_appendList(List* list, void* item) {
 // Calls shutdown for every thread
 // Can be called from any thread
 void Boss_shutdown(void) {
-	//pthread_mutex_lock(&main_mutex);
+	pthread_mutex_lock(&main_mutex);
 	{
 		pthread_cond_signal(&main_cond);
-		printf("Just signaled main cond\n");
 	}
-	//pthread_mutex_unlock(&main_mutex);
+	pthread_mutex_unlock(&main_mutex);
 }
 
 void Boss_exitSignal(void) {
@@ -92,5 +91,4 @@ void Boss_exitSignal(void) {
 	Send_shutdown();
 	Write_shutdown();
 	Read_shutdown();
-	printf("Main thread now free to end!\n");
 }

@@ -5,6 +5,8 @@
 #include <assert.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 #include "boss.h"
 #include "list.h"
 #include "send.h"
@@ -22,7 +24,6 @@ int remote_port;
 
 
 void* sendMessage(void* unused) {
-	printf("Send thread executing!\n");
 	// Need to do a bunch of stuff here involving
 	// mutexes and condition variables with write.c
 	while(1) {
@@ -37,7 +38,7 @@ void* sendMessage(void* unused) {
 		if (sendto(socketDescriptor, message,
 			sizeof(message), 0, (struct sockaddr*) &sinRemote,
 			sin_len) == SO_ERROR) {
-			printf("Message not successfully sent!\n");
+			printf("ERROR: Message not successfully sent\n");
 		}
 		// Has to check message + 2 since ENTER included '\n' and fgets
 		// puts EOF after that
@@ -50,18 +51,17 @@ void* sendMessage(void* unused) {
 
 void Send_init(List* list, struct sockaddr_in remoteAddress, int remotePort) {
 	out_list = list;
+	memset(&sinRemote, 0, sizeof(sinRemote));
 	sinRemote = remoteAddress;
 	remote_port = remotePort;
 
-	printf("Remote address according to main arguments: %d\n", ntohs(sinRemote.sin_addr.s_addr));
+	printf("Remote address according to main arguments: %s\n", inet_ntoa(sinRemote.sin_addr));
+	printf("Remote port according to main arguments: %d\n", ntohs(sinRemote.sin_port));
 
 	pthread_create(&sendThread, NULL, sendMessage, NULL);
 }
 
 void Send_shutdown(void) {
-	printf("In send shutdown\n");
 	pthread_cancel(sendThread);
-	printf("Cancelled sendThread\n");
 	pthread_join(sendThread, NULL);
-	printf("Send shutdown finished\n");
 }

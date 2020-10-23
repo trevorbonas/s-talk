@@ -14,7 +14,6 @@ static pthread_mutex_t out_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t out_cond = PTHREAD_COND_INITIALIZER;
 
 void* writeMessage(void* unused) {
-	printf("Write thread executing!\n");
 	while(1) {
 		char* message = (char*)malloc(1024);
 		message = fgets(message, 1024, stdin);
@@ -58,7 +57,6 @@ void Write_signalMsg(void) {
 }
 
 void Write_shutdown(void){
-	printf("In write shutdown\n");
 	pthread_cancel(writeThread);
 	pthread_join(writeThread, NULL);
 	List_free(out_list, Write_freeMessages);

@@ -11,7 +11,6 @@ List* in_list;
 static pthread_t readThread;
 
 void* readToScreen(void* unused){
-	printf("Read thread executing!\n");
 	while(1){
 		Receive_signalNewMsg();
 		const char* intro = "friend: ";
@@ -34,7 +33,6 @@ void Read_init(List* list){
 }
 
 void Read_shutdown(void) {
-	printf("In read shutdown\n");
 	pthread_cancel(readThread);
 	pthread_join(readThread, NULL);
 }

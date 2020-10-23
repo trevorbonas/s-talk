@@ -18,7 +18,6 @@ static pthread_cond_t in_cond = PTHREAD_COND_INITIALIZER;	// Conditional variabl
 static List* in_list;
 
 void* receiveTransmission(void* unused) {
-	printf("Receive thread executing!\n");
 	// Address
 	struct sockaddr_in sin = Boss_getSocket();
 
@@ -28,7 +27,6 @@ void* receiveTransmission(void* unused) {
 	int socketDescriptor = socket(PF_INET, SOCK_DGRAM, 0);
 
 	while(1) {
-		printf("Waiting for message\n");
 		struct sockaddr_in sinRemote; // Address of sender
 		unsigned int sin_len = sizeof(sinRemote);
 		char* messageRx = (char*)malloc(1024); // Max length is 1024, 1024 characters
@@ -70,7 +68,6 @@ void Receive_init(List* list) {
 }
 
 void Receive_shutdown(void) {
-	printf("In receive shutdown\n");
 	pthread_cancel(receiveThread);
 	pthread_join(receiveThread, NULL);
 	List_free(in_list, Receive_freeMessages); // Just in case there's something in buffer or read didn't free
