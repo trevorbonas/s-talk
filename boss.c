@@ -35,12 +35,13 @@ struct sockaddr_in Boss_getSocket() {
 	pthread_mutex_lock(&port_mutex);
 	{
 		if (!sockInit) {
+			int socketDescriptor = socket(PF_INET, SOCK_DGRAM, 0);
+			
 			memset(&sinNew, 0, sizeof(sinNew));
 			sinNew.sin_family = AF_INET;
 			sinNew.sin_addr.s_addr = htonl(INADDR_ANY);
 			sinNew.sin_port = htons(local_port);
 
-			int socketDescriptor = socket(PF_INET, SOCK_DGRAM, 0);
 			if (bind(socketDescriptor, (struct sockaddr*) &sinNew, sizeof(sinNew)) == -1) {
 				printf("ERROR: Socket could not be bound\nExiting program\n");
 				Boss_shutdown();

@@ -29,7 +29,7 @@ int main(int argc, char* argv[]) {
 	memset(&remote_ip, 0, sizeof(remote_ip));
 	remote_ip.sin_family = AF_INET;
 	remote_ip.sin_port = htons(remote_port);
-	inet_pton(AF_INET, argv[2], &remote_ip.sin_addr.s_addr);
+	remote_ip.sin_addr.s_addr = (long)gethostbyname(argv[2]);
 
 	// After checks
 

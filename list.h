@@ -14,6 +14,12 @@ struct Node_s {
     void* pItem;
     Node* pNext;
     Node* pPrev;
+    // macosx fields, doesn't change anything for instructor provided
+    // list.o
+    Node* next;
+    Node* prev;
+    void* item;
+    int index;
 };
 
 enum ListOutOfBounds {
@@ -29,6 +35,15 @@ struct List_s {
     int count;
     List* pNextFreeHead;
     enum ListOutOfBounds lastOutOfBoundsReason;
+
+    // Fields to support tlist.c, for macosx
+    Node* head;
+    Node* tail;
+    Node* current;
+    bool after;
+    bool before;
+    int number;
+    int index;
 };
 
 // Maximum number of unique lists the system can support
