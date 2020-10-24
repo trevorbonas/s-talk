@@ -21,6 +21,7 @@ pthread_mutex_t main_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t main_cond = PTHREAD_COND_INITIALIZER;
 
 struct sockaddr_in sinNew;
+int socketDescriptor;
 
 
 // These are functions any thread can call
@@ -31,18 +32,18 @@ void Boss_addLocalPort(int x) {
 	local_port = x;
 }
 
-struct sockaddr_in Boss_getSocket() {
+int Boss_getSocket() {
 	pthread_mutex_lock(&port_mutex);
 	{
 		if (!sockInit) {
-			int socketDescriptor = socket(PF_INET, SOCK_DGRAM, 0);
-			
+			socketDescriptor = socket(PF_INET, SOCK_DGRAM, 0);
+
 			memset(&sinNew, 0, sizeof(sinNew));
 			sinNew.sin_family = AF_INET;
 			sinNew.sin_addr.s_addr = htonl(INADDR_ANY);
 			sinNew.sin_port = htons(local_port);
 
-			if (bind(socketDescriptor, (struct sockaddr*) &sinNew, sizeof(sinNew)) == -1) {
+			if (bind(socketDescriptor, (struct sockaddr*) &sinNew, sizeof(sinNew)) < 0) {
 				printf("ERROR: Socket could not be bound\nExiting program\n");
 				Boss_shutdown();
 			}
@@ -50,7 +51,7 @@ struct sockaddr_in Boss_getSocket() {
 		}
 	}
 	pthread_mutex_unlock(&port_mutex);
-	return sinNew;
+	return socketDescriptor;
 }
 
 

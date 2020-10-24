@@ -28,15 +28,15 @@ void* sendMessage(void* unused) {
 	// mutexes and condition variables with write.c
 	while(1) {
 		Write_signalMsg();
-		struct sockaddr_in sin = Boss_getSocket();
-		int socketDescriptor = socket(PF_INET, SOCK_DGRAM, 0);
+		int socketDescriptor = Boss_getSocket();
 	
 		char* message = List_first(out_list);
 		List_remove(out_list);
 		unsigned int sin_len = sizeof(sinRemote);
 
+		int len = strlen(message);
 		if (sendto(socketDescriptor, message,
-			sizeof(message), 0, (struct sockaddr*) &sinRemote,
+			len + 1, 0, (struct sockaddr*) &sinRemote,
 			sin_len) == SO_ERROR) {
 			printf("ERROR: Message not successfully sent\n");
 		}

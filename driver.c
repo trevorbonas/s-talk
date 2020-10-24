@@ -29,7 +29,28 @@ int main(int argc, char* argv[]) {
 	memset(&remote_ip, 0, sizeof(remote_ip));
 	remote_ip.sin_family = AF_INET;
 	remote_ip.sin_port = htons(remote_port);
-	remote_ip.sin_addr.s_addr = (long)gethostbyname(argv[2]);
+
+	struct addrinfo *returned_info;
+	int addr_check;
+	struct  addrinfo hint;
+	memset(&hint, 0, sizeof(struct addrinfo));
+	hint.ai_flags = AI_PASSIVE;
+	hint.ai_family = AF_UNSPEC;
+	hint.ai_socktype = SOCK_DGRAM;
+	hint.ai_protocol = 0;
+	hint.ai_addrlen = 0;
+	hint.ai_canonname = NULL;
+	hint.ai_addr = NULL;
+	hint.ai_next = NULL;
+	/*addr_check = getaddrinfo(argv[2], argv[3], &hint, &returned_info);
+	if (addr_check != 0) {
+		printf("Remote ip as input is invalid\nExiting program\n");
+		return 2;
+	}
+	remote_ip.sin_addr = returned_info->ai_addr; */
+
+	struct hostent* hostinfo = gethostbyname(argv[2]);
+	bcopy((char*)hostinfo->h_addr, (char*)&remote_ip.sin_addr, hostinfo->h_length);
 
 	// After checks
 

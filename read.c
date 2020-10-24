@@ -13,7 +13,6 @@ static pthread_t readThread;
 void* readToScreen(void* unused){
 	while(1){
 		Receive_signalNewMsg();
-		printf("RECEIVED NEW MESSAGE!!!!!!!!!!!\n");
 		const char* intro = "friend: ";
 		const char* nl = "\n";
 		char* message = List_first(in_list);

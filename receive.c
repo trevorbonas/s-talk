@@ -18,20 +18,14 @@ static pthread_cond_t in_cond = PTHREAD_COND_INITIALIZER;	// Conditional variabl
 static List* in_list;
 
 void* receiveTransmission(void* unused) {
-	// Address
-	struct sockaddr_in sin = Boss_getSocket();
-
-	printf("Local port according to Boss_getSocket: ");
-	printf("%d\n", ntohs(sin.sin_port));
-
-	int socketDescriptor = socket(PF_INET, SOCK_DGRAM, 0);
+	int socketDescriptor = Boss_getSocket();
 
 	while(1) {
 		struct sockaddr_in sinRemote; // Address of sender
 		unsigned int sin_len = sizeof(sinRemote);
-		char* messageRx = (char*)malloc(1024); // Max length is 1024, 1024 characters
+		char* messageRx = (char*)malloc(sizeof(char)*1024); // Max length is 1024, 1024 characters
 		int bytesRx = recvfrom(socketDescriptor,
-			messageRx, sizeof(messageRx), 0, (struct sockaddr*) &sinRemote,
+			messageRx, 1024, 0, (struct sockaddr*) &sinRemote,
 			&sin_len);
 
 		int terminateIdx = (bytesRx < 1024)?bytesRx:1024 - 1;

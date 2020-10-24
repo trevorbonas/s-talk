@@ -14,7 +14,7 @@
 #include "read.h"
 
 void Boss_addLocalPort(int x);
-struct sockaddr_in Boss_getSocket();
+int Boss_getSocket();
 int Boss_appendList(List* list, void* item);
 void Boss_shutdown(void);
 void Boss_exitSignal(void);
