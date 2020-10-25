@@ -31,11 +31,13 @@ int main(int argc, char* argv[]) {
 	remote_ip.sin_port = htons(remote_port);
 
 	struct addrinfo *returned_info;
+	struct addrinfo *current;
+
 	int addr_check;
 	struct  addrinfo hint;
 	memset(&hint, 0, sizeof(struct addrinfo));
-	hint.ai_flags = AI_PASSIVE;
-	hint.ai_family = AF_UNSPEC;
+	hint.ai_flags = 0;
+	hint.ai_family = AF_INET;
 	hint.ai_socktype = SOCK_DGRAM;
 	hint.ai_protocol = 0;
 	hint.ai_addrlen = 0;
@@ -47,8 +49,13 @@ int main(int argc, char* argv[]) {
 		printf("Remote ip as input is invalid\nExiting program\n");
 		return 2;
 	}
-	remote_ip.sin_addr = returned_info->ai_addr; */
+	for (current = returned_info; current != NULL; current = current->ai_next) {
+		if (current->ai_family == AF_INET) {
+			remote_ip.sin_addr = ((struct sockaddr_in)(current->ai_addr))->sin_addr;
+		}
+	}*/
 
+	// This works
 	struct hostent* hostinfo = gethostbyname(argv[2]);
 	bcopy((char*)hostinfo->h_addr, (char*)&remote_ip.sin_addr, hostinfo->h_length);
 
