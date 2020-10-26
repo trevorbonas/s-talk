@@ -89,8 +89,14 @@ void Boss_exitSignal(void) {
 	}
 	pthread_mutex_unlock(&main_mutex);
 
-	Receive_shutdown();
 	Send_shutdown();
-	Write_shutdown();
 	Read_shutdown();
+	Write_shutdown();
+	Receive_shutdown();
+	pthread_mutex_destroy(&main_mutex);
+	pthread_mutex_destroy(&list_mutex);
+	pthread_mutex_destroy(&port_mutex);
+	pthread_cond_destroy(&main_cond);
+
+
 }

@@ -18,10 +18,7 @@ static pthread_t sendThread;
 
 static List* out_list;
 
-struct sockaddr_in sinRemote;
-int remote_port;
-
-
+struct addrinfo* sinRemote;
 
 void* sendMessage(void* unused) {
 	// Need to do a bunch of stuff here involving
@@ -32,12 +29,11 @@ void* sendMessage(void* unused) {
 	
 		char* message = List_first(out_list);
 		List_remove(out_list);
-		unsigned int sin_len = sizeof(sinRemote);
 
 		int len = strlen(message);
 		if (sendto(socketDescriptor, message,
-			len + 1, 0, (struct sockaddr*) &sinRemote,
-			sin_len) == SO_ERROR) {
+			len + 1, 0, sinRemote->ai_addr,
+			sinRemote->ai_addrlen) == SO_ERROR) {
 			printf("ERROR: Message not successfully sent\n");
 		}
 		// Has to check message + 2 since ENTER included '\n' and fgets
@@ -49,14 +45,9 @@ void* sendMessage(void* unused) {
 	}
 }
 
-void Send_init(List* list, struct sockaddr_in remoteAddress, int remotePort) {
+void Send_init(List* list, struct addrinfo** remoteAddress) {
 	out_list = list;
-	memset(&sinRemote, 0, sizeof(sinRemote));
-	sinRemote = remoteAddress;
-	remote_port = remotePort;
-
-	printf("Remote address according to main arguments: %s\n", inet_ntoa(sinRemote.sin_addr));
-	printf("Remote port according to main arguments: %d\n", ntohs(sinRemote.sin_port));
+	sinRemote = *remoteAddress;
 
 	pthread_create(&sendThread, NULL, sendMessage, NULL);
 }
@@ -64,4 +55,5 @@ void Send_init(List* list, struct sockaddr_in remoteAddress, int remotePort) {
 void Send_shutdown(void) {
 	pthread_cancel(sendThread);
 	pthread_join(sendThread, NULL);
+	free(sinRemote);
 }

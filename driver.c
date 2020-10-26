@@ -24,18 +24,15 @@ int main(int argc, char* argv[]) {
 		return 1;
 	}
 
-	remote_port = atoi(argv[3]);
 	local_port = atoi(argv[1]);
-	memset(&remote_ip, 0, sizeof(remote_ip));
-	remote_ip.sin_family = AF_INET;
-	remote_ip.sin_port = htons(remote_port);
 
-	struct addrinfo *returned_info;
+	struct addrinfo *remoteAddress;
 	struct addrinfo *current;
 
 	int addr_check;
 	struct  addrinfo hint;
 	memset(&hint, 0, sizeof(struct addrinfo));
+	// Setting for how I want input address to be interpreted
 	hint.ai_flags = 0;
 	hint.ai_family = AF_INET;
 	hint.ai_socktype = SOCK_DGRAM;
@@ -44,20 +41,16 @@ int main(int argc, char* argv[]) {
 	hint.ai_canonname = NULL;
 	hint.ai_addr = NULL;
 	hint.ai_next = NULL;
-	/*addr_check = getaddrinfo(argv[2], argv[3], &hint, &returned_info);
+	addr_check = getaddrinfo(argv[2], argv[3], &hint, &remoteAddress);
 	if (addr_check != 0) {
 		printf("Remote ip as input is invalid\nExiting program\n");
 		return 2;
 	}
-	for (current = returned_info; current != NULL; current = current->ai_next) {
-		if (current->ai_family == AF_INET) {
-			remote_ip.sin_addr = ((struct sockaddr_in)(current->ai_addr))->sin_addr;
-		}
-	}*/
+	
 
-	// This works
-	struct hostent* hostinfo = gethostbyname(argv[2]);
-	bcopy((char*)hostinfo->h_addr, (char*)&remote_ip.sin_addr, hostinfo->h_length);
+	// Outdate method crudely works
+	//struct hostent* hostinfo = gethostbyname(argv[2]);
+	//bcopy((char*)hostinfo->h_addr, (char*)&remote_ip.sin_addr, hostinfo->h_length);
 
 	// After checks
 
@@ -67,13 +60,13 @@ int main(int argc, char* argv[]) {
 	// Data to be sent out
 	List* out = List_create();
 
-	Boss_addLocalPort(local_port);
+	Boss_addLocalPort(local_port); // Just means passing local_port only once
 
 	Receive_init(in);
 	Read_init(in);
 
 	Write_init(out);
-	Send_init(out, remote_ip, remote_port);
+	Send_init(out, &remoteAddress);
 
 	Boss_exitSignal();
 

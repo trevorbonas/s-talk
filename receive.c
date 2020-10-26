@@ -31,8 +31,6 @@ void* receiveTransmission(void* unused) {
 		int terminateIdx = (bytesRx < 1024)?bytesRx:1024 - 1;
 		messageRx[terminateIdx] = 0;
 
-		printf("Message received (%d bytes): \n\n'%s'\n", bytesRx, messageRx);
-
 		Boss_appendList(in_list, messageRx);
 
 		pthread_mutex_lock(&in_mutex);
@@ -46,6 +44,7 @@ void* receiveTransmission(void* unused) {
 
 void Receive_freeMessages(void* message) {
 	free(message);
+	printf("Receive_freeMessages called!!!\n");
 }
 
 void Receive_signalNewMsg(void){
@@ -64,5 +63,8 @@ void Receive_init(List* list) {
 void Receive_shutdown(void) {
 	pthread_cancel(receiveThread);
 	pthread_join(receiveThread, NULL);
-	List_free(in_list, Receive_freeMessages); // Just in case there's something in buffer or read didn't free
+	List_free(in_list, &Receive_freeMessages); // Just in case there's something in buffer or read didn't free
+	pthread_mutex_destroy(&in_mutex);
+	pthread_cond_destroy(&in_cond);
+
 }

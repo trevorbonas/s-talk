@@ -19,10 +19,12 @@ void* writeMessage(void* unused) {
 		message = fgets(message, 1024, stdin);
 		if (message == NULL) {
 			printf("ERROR: Message was not received from Keyboard\n");
+			free(message);
 		}
 		else {
 			if (Boss_appendList(out_list, message) == -1) {
 				printf("ERROR: Keyboard buffer full, message not added to send queue\n");
+				free(message);
 			}
 			else {
 				pthread_mutex_lock(&out_mutex);
@@ -45,7 +47,10 @@ void Write_init(List* list){
 }
 
 void Write_freeMessages(void* message) {
-	free(message);
+	if (message) {
+		free(message);
+		printf("Message freed!\n");
+	}
 }
 
 void Write_signalMsg(void) {
@@ -59,5 +64,7 @@ void Write_signalMsg(void) {
 void Write_shutdown(void){
 	pthread_cancel(writeThread);
 	pthread_join(writeThread, NULL);
-	List_free(out_list, Write_freeMessages);
+	List_free(out_list, &Write_freeMessages);
+	pthread_mutex_destroy(&out_mutex);
+	pthread_cond_destroy(&out_cond);
 }
