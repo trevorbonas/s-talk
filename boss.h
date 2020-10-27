@@ -16,6 +16,8 @@
 void Boss_addLocalPort(int x);
 int Boss_getSocket();
 int Boss_appendList(List* list, void* item);
+void Boss_waitForNode(void);
+void Boss_removeNode(List* list);
 void Boss_shutdown(void);
 void Boss_exitSignal(void);
 

@@ -12,19 +12,19 @@ static pthread_t readThread;
 
 void* readToScreen(void* unused){
 	while(1){
-		Receive_signalNewMsg();
+		Receive_signalNewMsg(); // Waits for a message to be received
 		const char* intro = "[Friend]: ";
-		const char* nl = "\n";
-		char* message = List_first(in_list);
-		List_remove(in_list);
+		char* message = List_first(in_list); // Takes message from front of queue
 		fputs(intro, stdout);
 		fputs(message, stdout);
-		fputs(nl, stdout);
 		fflush(stdout);
-		if (*(message) == '!' && *(message + 2) == '\0') {
+		if (*(message) == '!' && *(message + 2) == '\0') { // If receives a single '!' exits gracefully
 			Boss_shutdown(); // receive.c will take care of freeing the message
 		}
-		free(message);
+		else {
+			free(message);
+			Boss_removeNode(in_list);
+		}
 	}
 }
 
