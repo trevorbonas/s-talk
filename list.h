@@ -14,7 +14,7 @@ struct Node_s {
     void* pItem;
     Node* pNext;
     Node* pPrev;
-    // macosx fields, doesn't change anything for instructor provided
+    // macos fields, doesn't change anything for instructor provided
     // list.o
     Node* next;
     Node* prev;
@@ -36,7 +36,7 @@ struct List_s {
     List* pNextFreeHead;
     enum ListOutOfBounds lastOutOfBoundsReason;
 
-    // Fields to support tlist.c, for macosx
+    // Fields to support tlist.c, for macos
     Node* head;
     Node* tail;
     Node* current;
